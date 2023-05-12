@@ -18,9 +18,7 @@ import java.awt.event.ActionEvent;
 
 public class Jty_Help extends JFrame {
 	
-	
-	
-	
+
 
 	private JPanel contentPane;
 	private Image backgroundImage = Toolkit.getDefaultToolkit().getImage(Jty_Profile.class.getResource("/com/javalec/image/helpbackgorund.png"));
