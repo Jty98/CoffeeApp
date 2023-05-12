@@ -71,6 +71,7 @@ public class Lju_base extends JFrame {
 	private JButton getBtnHome() {
 		if (btnHome == null) {
 			btnHome = new JButton("");
+			btnHome.setBackground(new Color(131, 77, 30));
 			btnHome.setIcon(new ImageIcon(Lju_base.class.getResource("/com/javalec/image/btnHome.png")));
 			btnHome.setFocusPainted(false);					// 버튼 포커스라인 없애기
 			btnHome.setBorderPainted(false);
@@ -84,6 +85,7 @@ public class Lju_base extends JFrame {
 	private JButton getBtnMenu() {
 		if (btnMenu == null) {
 			btnMenu = new JButton("");
+			btnMenu.setBackground(new Color(131, 77, 30));
 			btnMenu.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 				}
@@ -97,6 +99,7 @@ public class Lju_base extends JFrame {
 	private JButton getBtnOrder() {
 		if (btnOrder == null) {
 			btnOrder = new JButton("");
+			btnOrder.setBackground(new Color(131, 77, 30));
 			btnOrder.setIcon(new ImageIcon(Lju_base.class.getResource("/com/javalec/image/btnOrder.png")));
 			btnOrder.setFocusPainted(false);
 			btnOrder.setBorderPainted(false);
@@ -106,6 +109,7 @@ public class Lju_base extends JFrame {
 	private JButton getBtnReview() {
 		if (btnReview == null) {
 			btnReview = new JButton("");
+			btnReview.setBackground(new Color(131, 77, 30));
 			btnReview.setIcon(new ImageIcon(Lju_base.class.getResource("/com/javalec/image/btnReview.png")));
 			btnReview.setFocusPainted(false);
 			btnReview.setBorderPainted(false);

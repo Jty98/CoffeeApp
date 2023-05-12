@@ -4,7 +4,7 @@ public class ShareVar {
 	
 	// dB변경되면 여기서 변경시켜주면 됨
 	
-	public static final String DBName = "jdbc:mysql://127.0.0.1/cafe_app?serverTimezone=UTC&characterEncoding=utf8&useSSL=FALSE";
+	public static final String DBName = "jdbc:mysql://127.0.0.1/cafe?serverTimezone=UTC&characterEncoding=utf8&useSSL=FALSE";
 	public static final String DBUser = "root";
 	public static final String DBPass = "qwer1234";
 	
