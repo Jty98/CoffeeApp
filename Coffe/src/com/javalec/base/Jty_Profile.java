@@ -11,19 +11,22 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-
 import com.javalec.dao.Jty_Dao_Profile;
 import com.javalec.dto.Jty_Dto_Profile;
+import com.javalec.util.ShareVar;
 
 import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import java.awt.Font;
 import javax.swing.SwingConstants;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class Jty_Profile extends JFrame {
 
@@ -45,7 +48,7 @@ public class Jty_Profile extends JFrame {
     private JButton btnPayUpdate;
     private JLabel lblInsertdate;
     private JButton btnAllUpdate;
-    private JButton btnAllUpdate_1;
+    private JButton btnCuponBox;
     private JLabel lblNewLabel;
     private JLabel lblNewLabel_1;
     private String cid; // 전역 변수로 cid 선언
@@ -72,6 +75,12 @@ public class Jty_Profile extends JFrame {
      * Create the frame.
      */
     public Jty_Profile() {
+    	addWindowListener(new WindowAdapter() {
+    		@Override
+    		public void windowOpened(WindowEvent e) {
+    			profileOpend(cid);
+    		}
+    	});
     	setTitle("내정보");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 390, 872);
@@ -104,7 +113,7 @@ public class Jty_Profile extends JFrame {
         contentPane.add(getBtnPayUpdate());
         contentPane.add(getLblInsertdate());
         contentPane.add(getBtnAllUpdate());
-        contentPane.add(getBtnAllUpdate_1());
+        contentPane.add(getBtnCuponBox());
         contentPane.add(getLblNewLabel());
         contentPane.add(getLblNewLabel_1());
         contentPane.add(getLblInsertdate_1());
@@ -267,20 +276,25 @@ public class Jty_Profile extends JFrame {
 	private JButton getBtnAllUpdate() {
 		if (btnAllUpdate == null) {
 			btnAllUpdate = new JButton("");
+			btnAllUpdate.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					profileUpdate();
+				}
+			});
 			btnAllUpdate.setBackground(new Color(248, 227, 182));
 			btnAllUpdate.setIcon(new ImageIcon(Jty_Profile.class.getResource("/com/javalec/image/수정버튼.png")));
 			btnAllUpdate.setBounds(274, 607, 76, 33);
 		}
 		return btnAllUpdate;
 	}
-	private JButton getBtnAllUpdate_1() {
-		if (btnAllUpdate_1 == null) {
-			btnAllUpdate_1 = new JButton("");
-			btnAllUpdate_1.setIcon(new ImageIcon(Jty_Profile.class.getResource("/com/javalec/image/쿠폰함버튼.png")));
-			btnAllUpdate_1.setBackground(new Color(248, 227, 182));
-			btnAllUpdate_1.setBounds(43, 607, 76, 41);
+	private JButton getBtnCuponBox() {
+		if (btnCuponBox == null) {
+			btnCuponBox = new JButton("");
+			btnCuponBox.setIcon(new ImageIcon(Jty_Profile.class.getResource("/com/javalec/image/쿠폰함버튼.png")));
+			btnCuponBox.setBackground(new Color(248, 227, 182));
+			btnCuponBox.setBounds(43, 607, 76, 41);
 		}
-		return btnAllUpdate_1;
+		return btnCuponBox;
 	}
 	private JLabel getLblNewLabel() {
 		if (lblNewLabel == null) {
@@ -314,10 +328,11 @@ public class Jty_Profile extends JFrame {
 	}
 	
 	// ----- function -----
+	// cid 받는걸로 하기
 	private void profileOpend(String cid) {
 	    Jty_Dao_Profile jty_Dao_Profile = new Jty_Dao_Profile();
-	    Jty_Dto_Profile jty_Dto_Profile = jty_Dao_Profile.profileOpend("wook");
-  
+	    Jty_Dto_Profile jty_Dto_Profile = jty_Dao_Profile.profileOpend(cid);
+	    
 		tfName.setText(jty_Dto_Profile.getCname());
 		tfUserid.setText(jty_Dto_Profile.getCid());
 		tfPassword.setText(jty_Dto_Profile.getCpassword());
@@ -328,11 +343,29 @@ public class Jty_Profile extends JFrame {
 		pfPaymentPassword.setText(jty_Dto_Profile.getCpayPassword());
 		
 	}
+	//String id =ShareVar.testid;
 	
-	private void backAction() {
-		Jty_Main jty_Main = new Jty_Main();
-		jty_Main.setVisible(true);
-		dispose();
+	
+	private void profileUpdate() {
+		Jty_Dao_Profile Jty_dao_Profile = new Jty_Dao_Profile();
+		
+		String name = tfName.getText();
+		String id = tfUserid.getText();
+		String password = tfPassword.getText();
+		String phone = tfPhone.getText();
+		String email = tfEmail.getText();
+		String address = tfAddress.getText();
+		String payPassword = pfPaymentPassword.getText();
+		
+		
+		Jty_Dao_Profile jty_Dao_profile = new Jty_Dao_Profile(name, id, password, phone, email, address, payPassword);
+		boolean result = jty_Dao_profile.profileUpdate();
+		
+		if (result) {
+			JOptionPane.showMessageDialog(this, "정보 수정\n"+tfName.getText()+ "님의 정보가 수정었습니다.", "주소록 정보",JOptionPane.INFORMATION_MESSAGE); //this 는 active 창에 띄우고 null은 화면아무데나 중앙에 띄워라
+		}else {
+			JOptionPane.showMessageDialog(this, "정보 수정\n"+ "수정 중 문제가 발생했습니다.", "주소록 정보",JOptionPane.ERROR_MESSAGE); //this 는 active 창에 띄우고 null은 화면아무데나 중앙에 띄워라
+		}
 	}
 	
 	
@@ -340,6 +373,11 @@ public class Jty_Profile extends JFrame {
 	
 	
 	
+	private void backAction() {
+		Jty_Main jty_Main = new Jty_Main();
+		jty_Main.setVisible(true);
+		dispose();
+	}
 	
 	
 	

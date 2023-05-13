@@ -2,6 +2,7 @@ package com.javalec.dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -50,7 +51,7 @@ public class Jty_Dao_Profile {
 	public Jty_Dto_Profile profileOpend(String cid) {
 	    Jty_Dto_Profile jty_Dto_Profile = null;
 	    String query = "SELECT cname, cid, cpassword, cphone, cemail, caddress, cpayPassword ";
-	    String query1 = "FROM customer WHERE cid = '" + cid + "'";
+	    String query1 = "FROM customer WHERE cid = '" + "wook" + "'";
 
 	    try {
 	        Class.forName("com.mysql.cj.jdbc.Driver");
@@ -68,13 +69,6 @@ public class Jty_Dao_Profile {
 	            String wkcaddress = rs.getString(6);
 	            String wkcpayPassword = rs.getString(7);
 	            
-	            System.out.println("wkcname: " + wkcname);
-	            System.out.println("wkcid: " + wkcid);
-	            System.out.println("wkcpassword: " + wkcpassword);
-	            System.out.println("wkcphone: " + wkcphone);
-	            System.out.println("wkcemail: " + wkcemail);
-	            System.out.println("wkcaddress: " + wkcaddress);
-	            System.out.println("wkcpayPassword: " + wkcpayPassword);
 
 	            jty_Dto_Profile = new Jty_Dto_Profile(wkcname, wkcid, wkcpassword, wkcphone, wkcemail, wkcaddress, wkcpayPassword);
 	        }
@@ -82,57 +76,50 @@ public class Jty_Dao_Profile {
 	        conn_mysql.close();
 	    } catch (Exception e) {
 	        e.printStackTrace();
+	        jty_Dto_Profile = null;
 	    }
 	    return jty_Dto_Profile;
 	}
-
-		
 	
-	public ArrayList<Jty_Dto_Profile> selectList() { // <타입>
-		ArrayList<Jty_Dto_Profile> dtoList = new ArrayList<Jty_Dto_Profile>();
-
-		String whereDefault = "select cname, cid, cpassword, cpassword, cphone, cemail, caddress, cpayPassword";
-		String whereDefault1 = "from customer where cid = '" + cid + "'";
-
-		try {
-			Class.forName("com.mysql.cj.jdbc.Driver"); // 데이터 연결 정의
-			Connection conn_mysql = DriverManager.getConnection(url_mysql, id_mysql, pw_mysql);
+	public boolean profileUpdate() {
+		PreparedStatement ps = null ;
+		try {  // java가 db에 접근했다.
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			Connection conn_mysql = DriverManager.getConnection(url_mysql,id_mysql,pw_mysql);
 			Statement stmt_mysql = conn_mysql.createStatement();
-
-			ResultSet rs = stmt_mysql.executeQuery(whereDefault + whereDefault1); // 결과값을 불러오기
-
-			// 검색시작
-			while (rs.next()) { // 읽을데이터가 없으면 빠진다
-				String wkcname = rs.getString(1);
-				String wkcid = rs.getString(2);
-				String wkcpassword = rs.getString(3);
-				String wkcpassword1 = rs.getString(4);
-				String wkcphone = rs.getString(4);
-				String wkcemail = rs.getString(5);
-				String wkcaddress = rs.getString(6);
-				String wkcpayPassword = rs.getString(7);
-				
-				  System.out.println("wkcname: " + wkcname);
-				    System.out.println("wkcid: " + wkcid);
-				    System.out.println("wkcpassword: " + wkcpassword);
-				    System.out.println("wkcphone: " + wkcphone);
-				    System.out.println("wkcemail: " + wkcemail);
-				    System.out.println("wkcaddress: " + wkcaddress);
-				    System.out.println("wkcpayPassword: " + wkcpayPassword);
-
-				// 데이터를 불러와서 한번에 넣어주는부분 (배열 한칸에 wkSeq, wkName, wkTelno, wkRelation이 들어가있음)
-				Jty_Dto_Profile jty_Dto_Profile = new Jty_Dto_Profile(wkcname, wkcid, wkcpassword, wkcphone, wkcemail, wkcaddress, wkcpayPassword);
-				dtoList.add(jty_Dto_Profile);
-
-			}
-
+			
+			// 로그인창 만든 뒤 경로수정하기
+			String query = "update customer set cname = ?, cid = ?, cpassword = ?, cphone = ?, cemail = ?, caddress = ?, cpayPassword = ?";
+			String query1 = " where cid = '" + "wook" + "'";
+			
+			ps = conn_mysql.prepareStatement(query + query1);
+			ps.setString(1, cname.trim());   // 물음표 2번
+			ps.setString(2, cid.trim());
+			ps.setString(3, cpassword.trim());
+			ps.setString(4, cphone.trim());
+			ps.setString(5, cemail.trim());
+			ps.setString(6, caddress.trim());   
+			ps.setString(7, cpayPassword.trim());   
+			
+			
+			ps.executeUpdate();
 			conn_mysql.close();
-
-		} catch (Exception e) {
+			
+			
+		}catch(Exception e) {
 			e.printStackTrace();
+			return false;
 		}
-		return dtoList;
-
+		
+		return true;
 	}
 
+
 }
+//	            System.out.println("wkcname: " + wkcname);
+//	            System.out.println("wkcid: " + wkcid);
+//	            System.out.println("wkcpassword: " + wkcpassword);
+//	            System.out.println("wkcphone: " + wkcphone);
+//	            System.out.println("wkcemail: " + wkcemail);
+//	            System.out.println("wkcaddress: " + wkcaddress);
+//	            System.out.println("wkcpayPassword: " + wkcpayPassword);
