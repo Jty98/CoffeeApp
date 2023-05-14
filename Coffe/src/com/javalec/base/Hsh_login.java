@@ -91,7 +91,7 @@ public class Hsh_login extends JFrame {
 	private JLabel getLblNewLabel() {
 		if (lblNewLabel == null) {
 			lblNewLabel = new JLabel("New label");
-			lblNewLabel.setIcon(new ImageIcon(Lju_Menu01.class.getResource("/com/javalec/image/wifi.png")));
+			lblNewLabel.setIcon(new ImageIcon(Hsh_login.class.getResource("/com/javalec/image/wifi.png")));
 			lblNewLabel.setBounds(303, 15, 65, 18);
 		}
 		return lblNewLabel;
@@ -226,23 +226,23 @@ public class Hsh_login extends JFrame {
 		setVisible(false);
 	}	
 	private void login() {
-		String uid = tfCid.getText();
-		String upassword = tfCpw.getText();
+		String cid = tfCid.getText();
+		String cpassword = tfCpw.getText();
 		
-		if(uid.equals("admin") && upassword.equals("1234")) {
-			ShareVar.loginUserId = uid;
+		if(cid.equals("admin") && cpassword.equals("1234")) {
+			ShareVar.loginUserId = cid;
 			Kms_AdminMain ksm_adminmain = new Kms_AdminMain();
 			ksm_adminmain.setVisible(true);
 			dispose();
 		}else {
 
-			Hsh_logindao hsh_logindao = new Hsh_logindao(uid, upassword);
+			Hsh_logindao hsh_logindao = new Hsh_logindao(cid, cpassword);
 			
 			boolean result = hsh_logindao.logincheck();
 			
 			if(result == true) {
-				ShareVar.loginUserId = uid;
-				JOptionPane.showMessageDialog(this, uid+"님 환영합니다");
+				ShareVar.loginUserId = cid;
+				JOptionPane.showMessageDialog(this, cid+"님 환영합니다");
 //				buy  = new Buy();
 //				buy.setVisible(true);											ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ메인화면으로 연결
 //				dispose();

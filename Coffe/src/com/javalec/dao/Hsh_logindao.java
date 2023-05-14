@@ -12,8 +12,8 @@ public class Hsh_logindao {
 	private final String id_mysql = ShareVar.DBUser;
 	private final String pw_mysql = ShareVar.DBPass;
 	
-	String uid;
-	String upassword;
+	String cid;
+	String cpassword;
 	String uname;
 	String uphone;
 	String uemail;
@@ -23,14 +23,14 @@ public class Hsh_logindao {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Hsh_logindao(String uid, String upassword) {
+	public Hsh_logindao(String cid, String cpassword) {
 		super();
-		this.uid = uid;
-		this.upassword = upassword;
+		this.cid = cid;
+		this.cpassword = cpassword;
 	}
 	public boolean logincheck() {
 		boolean check = false;
-		String query = "select count(*) from customer where cid = '" + uid + "' and upassword = '" + upassword + "'";
+		String query = "select count(*) from customer where cid = '" + cid + "' and cpassword = '" + cpassword + "'";
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			Connection conn_mysql = DriverManager.getConnection(url_mysql, id_mysql, pw_mysql);

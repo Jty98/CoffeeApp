@@ -1,32 +1,32 @@
 package com.javalec.dto;
 
 public class Hsh_logindto {
-	String uid;
-	String upssword;
-	public Hsh_logindto(String uid, String upssword) {
+	String cid;
+	String cpassword;
+	public Hsh_logindto(String cid, String cpassword) {
 		super();
-		this.uid = uid;
-		this.upssword = upssword;
+		this.cid = cid;
+		this.cpassword = cpassword;
 	}
 	
 	public Hsh_logindto() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public String getUid() {
-		return uid;
+	public String getcid() {
+		return cid;
 	}
 
-	public void setUid(String uid) {
-		this.uid = uid;
+	public void setcid(String cid) {
+		this.cid = cid;
 	}
 
-	public String getUpssword() {
-		return upssword;
+	public String getcpassword() {
+		return cpassword;
 	}
 
-	public void setUpssword(String upssword) {
-		this.upssword = upssword;
+	public void setcpassword(String cpassword) {
+		this.cpassword = cpassword;
 	}
 	
 }
