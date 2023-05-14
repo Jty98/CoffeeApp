@@ -12,6 +12,17 @@ public class Kms_Dto_AdminProduct {
 	FileInputStream iimage;
 	String idescription;
 	
+	public Kms_Dto_AdminProduct(String iid, String iname, int iprice, int istock) {
+		super();
+		this.iid = iid;
+		this.iname = iname;
+		this.iprice = iprice;
+		this.istock = istock;
+	}
+
+
+
+
 	public Kms_Dto_AdminProduct(String iid, String iname, int iprice, int istock, String iimagename,
 			String idescription) {
 		super();

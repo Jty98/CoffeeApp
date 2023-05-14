@@ -5,12 +5,12 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
-import com.javalec.dao.DaoAdmin;
+
 import com.javalec.dao.Kms_Dao_AdminProduct;
-import com.javalec.dto.DtoAdmin;
 import com.javalec.dto.Kms_Dto_AdminProduct;
 
 import java.awt.Color;
@@ -30,15 +30,18 @@ import javax.swing.ButtonGroup;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.ListSelectionModel;
 
 public class Kms_AdminProduct extends JFrame {
 
@@ -50,9 +53,9 @@ public class Kms_AdminProduct extends JFrame {
 	private JRadioButton rbUpdate;
 	private JRadioButton rbDelete;
 	private final ButtonGroup buttonGroup = new ButtonGroup();
-	private JTextField tf;
+	private JTextField tfSelection;
 	private JButton btnNewButton;
-	private JComboBox comboBox;
+	private JComboBox cbSelection;
 	private JScrollPane scrollPane;
 	private JTable innerTable;
 	private JLabel lblProductId;
@@ -115,9 +118,9 @@ public class Kms_AdminProduct extends JFrame {
 		contentPane.add(getRbInsert());
 		contentPane.add(getRbUpdate());
 		contentPane.add(getRbDelete());
-		contentPane.add(getTf());
+		contentPane.add(getTfSelection());
 		contentPane.add(getBtnNewButton());
-		contentPane.add(getComboBox());
+		contentPane.add(getCbSelection());
 		contentPane.add(getScrollPane());
 		contentPane.add(getLblProductId());
 		contentPane.add(getLblProductName());
@@ -208,13 +211,13 @@ public class Kms_AdminProduct extends JFrame {
 		}
 		return rbDelete;
 	}
-	private JTextField getTf() {
-		if (tf == null) {
-			tf = new JTextField();
-			tf.setBounds(111, 101, 167, 26);
-			tf.setColumns(10);
+	private JTextField getTfSelection() {
+		if (tfSelection == null) {
+			tfSelection = new JTextField();
+			tfSelection.setBounds(111, 101, 167, 26);
+			tfSelection.setColumns(10);
 		}
-		return tf;
+		return tfSelection;
 	}
 	private JButton getBtnNewButton() {
 		if (btnNewButton == null) {
@@ -223,13 +226,13 @@ public class Kms_AdminProduct extends JFrame {
 		}
 		return btnNewButton;
 	}
-	private JComboBox getComboBox() {
-		if (comboBox == null) {
-			comboBox = new JComboBox();
-			comboBox.setModel(new DefaultComboBoxModel(new String[] {"상품명", "상품id"}));
-			comboBox.setBounds(18, 102, 91, 27);
+	private JComboBox getCbSelection() {
+		if (cbSelection == null) {
+			cbSelection = new JComboBox();
+			cbSelection.setModel(new DefaultComboBoxModel(new String[] {"상품명", "상품id"}));
+			cbSelection.setBounds(18, 102, 91, 27);
 		}
-		return comboBox;
+		return cbSelection;
 	}
 	private JScrollPane getScrollPane() {
 		if (scrollPane == null) {
@@ -242,10 +245,12 @@ public class Kms_AdminProduct extends JFrame {
 	private JTable getInnerTable() {
 		if (innerTable == null) {
 			innerTable = new JTable();
+			innerTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			innerTable.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
-//					tableclick();
+					btnOK.setEnabled(true);
+					tableClick();
 				}
 			});
 		}
@@ -378,6 +383,83 @@ public class Kms_AdminProduct extends JFrame {
 	
 	// ----- function ------
 	
+private void tableClick() {  //
+		
+		if(rbUpdate.isSelected()) {
+			tfProductId.setEditable(false);
+			//tfBrand.setEditable(true);
+			tfProductName.setEditable(true);
+			tfProductPrice.setEditable(true);
+			tfProductQty.setEditable(true);
+			tfFileName.setEditable(false);
+			btnOK.setVisible(true);
+			btnOK.setEnabled(true);
+			//btnFilePath.setVisible(true);
+		}
+		
+		
+		if(rbDelete.isSelected()) {
+			tfProductId.setEditable(false);
+			//tfBrand.setEditable(false);
+			tfProductName.setEditable(false);
+			tfProductPrice.setEditable(false);
+			tfProductQty.setEditable(false);
+			tfFileName.setEditable(false);
+			btnOK.setVisible(true);
+			btnOK.setEnabled(true);
+			//btnFilePath.setVisible(true);
+		}
+		
+		if (rbInsert.isSelected()) {
+			tfProductId.setEditable(true);
+			//tfBrand.setEditable(true);
+			tfProductName.setEditable(true);
+			tfProductPrice.setEditable(true);
+			tfProductQty.setEditable(true);
+			tfFileName.setEditable(false);
+			btnOK.setVisible(true);
+			btnOK.setEnabled(true);
+			//btnFilePath.setVisible(true);
+		}
+		
+		int i = innerTable.getSelectedRow();
+		String wkSequence = (String) innerTable.getValueAt(i, 0);
+		int wkSeqno = Integer.parseInt(wkSequence);
+		
+		// Dao 에 의뢰한다.
+		Kms_Dao_AdminProduct dao = new Kms_Dao_AdminProduct();
+		Kms_Dto_AdminProduct dto = dao.tableclick();
+		
+		tfProductId.setText(dto.getIid());
+		tfProductName.setText(dto.getIname());
+		tfProductPrice.setText(Integer.toString(dto.getIprice()));
+		tfProductQty.setText(Integer.toString(dto.getIstock()));
+		tfFileName.setText(dto.getIimagename());
+		tfDescription.setText(dto.getIdescription());
+		
+		
+		// Image 처리
+		String filePath = dto.getIimagename();
+		
+		lblImage.setIcon(new ImageIcon(filePath));
+		lblImage.setHorizontalAlignment(SwingConstants.CENTER);  // label의 중앙에 파일 위치
+		
+		// 이미지 크기조절
+		//String filePath = dto.getPimagename();
+		ImageIcon imgicon = new ImageIcon(filePath);
+		Image img = imgicon.getImage();
+		
+		Image updateImg = img.getScaledInstance(150,150, Image.SCALE_SMOOTH);
+		lblImage.setIcon(new ImageIcon(updateImg));
+		lblImage.setHorizontalAlignment(SwingConstants.CENTER);
+		
+		
+		File file = new File(filePath);
+		file.delete();
+		
+		
+	}
+	
 	private void tableInit() {
 		outerTable.addColumn("상품 ID");
 		outerTable.addColumn("상품명");
@@ -489,47 +571,11 @@ public class Kms_AdminProduct extends JFrame {
 			btnOK.setEnabled(false);
 			// btnFilePath.setVisible(false);
 			
-			int i = innerTable.getSelectedRow();
-			String wkSequence = (String) innerTable.getValueAt(i, 0);
-			int wkSeqno = Integer.parseInt(wkSequence);
 			
-			// Dao 에 의뢰한다.
-			Kms_Dao_AdminProduct dao = new Kms_Dao_AdminProduct(wkSequence);
-			Kms_Dto_AdminProduct dto = dao.tableclick();
-			
-			tfProductId.setText(dto.getIid());
-			tfProductName.setText(dto.getIname());
-			tfProductPrice.setText(Integer.toString(dto.getIprice()));
-			tfProductQty.setText(Integer.toString(dto.getIstock()));
-			tfFileName.setText(dto.getIimagename());
-			tfDescription.setText(dto.getIdescription());
-			
-			
-			// Image 처리
-			String filePath = dto.getIimagename();
-			
-			lblImage.setIcon(new ImageIcon(filePath));
-			lblImage.setHorizontalAlignment(SwingConstants.CENTER);  // label의 중앙에 파일 위치
-			
-			// 이미지 크기조절
-			//String filePath = dto.getPimagename();
-			ImageIcon imgicon = new ImageIcon(filePath);
-			Image img = imgicon.getImage();
-			
-			Image updateImg = img.getScaledInstance(150,150, Image.SCALE_SMOOTH);
-			lblImage.setIcon(new ImageIcon(updateImg));
-			lblImage.setHorizontalAlignment(SwingConstants.CENTER);
-			
-			
-			File file = new File(filePath);
-			file.delete();
-			
-			
-		}
 		}
 		
 
-	
+	}
 	
 	private void actionPartition() {
 		// 입력의 경우 OK 버튼을 눌렀을 때
@@ -542,7 +588,7 @@ public class Kms_AdminProduct extends JFrame {
 				clearColumn();
 				
 			}else {
-				JOptionPane.showMessageDialog(this, "\n"+message+ "입력하세요!", "주소록 정보",JOptionPane.INFORMATION_MESSAGE); //this 는 active 창에 띄우고 null은 화면아무데나 중앙에 띄워라
+				JOptionPane.showMessageDialog(this, "\n"+message+ "입력하세요!", "",JOptionPane.INFORMATION_MESSAGE); //this 는 active 창에 띄우고 null은 화면아무데나 중앙에 띄워라
 			} 
 		}
 		
@@ -556,7 +602,7 @@ public class Kms_AdminProduct extends JFrame {
 				clearColumn();
 				
 			}else {
-			JOptionPane.showMessageDialog(this, "주소록 정보 수정\n"+message+ "입력하세요!", "주소록 정보",JOptionPane.INFORMATION_MESSAGE); //this 는 active 창에 띄우고 null은 화면아무데나 중앙에 띄워라
+			JOptionPane.showMessageDialog(this, "\n"+message+ "입력하세요!", "",JOptionPane.INFORMATION_MESSAGE); //this 는 active 창에 띄우고 null은 화면아무데나 중앙에 띄워라
 			} 
 		}
 		// 삭제의 경우 OK 버튼을 눌렀을때
@@ -569,12 +615,13 @@ public class Kms_AdminProduct extends JFrame {
 				clearColumn();
 				
 			}else {
-				JOptionPane.showMessageDialog(this, "주소록 정보 삭제\n"+message+ "입력하세요!", "주소록 정보",JOptionPane.INFORMATION_MESSAGE); //this 는 active 창에 띄우고 null은 화면아무데나 중앙에 띄워라
+				JOptionPane.showMessageDialog(this, "\n"+message+ "입력하세요!", "",JOptionPane.INFORMATION_MESSAGE); //this 는 active 창에 띄우고 null은 화면아무데나 중앙에 띄워라
 			} 
 		}
 		
 		
 	}
+	
 	private int insertFieldCheck() {
 		int i = 0;
 		
@@ -622,4 +669,131 @@ public class Kms_AdminProduct extends JFrame {
 		lblImage.setIcon(null);
 	}
 
+	private void deleteAction() {
+		String id = tfProductId.getText();
+		String name = tfProductName.getText();
+		int price = Integer.parseInt(tfProductPrice.getText());
+		int stock = Integer.parseInt(tfProductQty.getText());
+		String description = tfDescription.getText();
+		
+		Kms_Dao_AdminProduct dao = new Kms_Dao_AdminProduct();
+		boolean result = dao.deleteAction();
+		
+		if (result) {
+			JOptionPane.showMessageDialog(this, "정보 삭제\n"+tfProductName.getText()+ "의 정보가 삭제되었습니다."); //this 는 active 창에 띄우고 null은 화면아무데나 중앙에 띄워라
+		}else {
+			JOptionPane.showMessageDialog(this, "정보 삭제\n"+ "삭제 중 문제가 발생했습니다."); //this 는 active 창에 띄우고 null은 화면아무데나 중앙에 띄워라
+		}
+		
+	}
+	
+	private void updateAction() {
+		String id = tfProductId.getText();
+		String name = tfProductName.getText();
+		int price = Integer.parseInt(tfProductPrice.getText());
+		int stock = Integer.parseInt(tfProductQty.getText());
+		String description = tfDescription.getText();
+		
+		Kms_Dao_AdminProduct dao = new Kms_Dao_AdminProduct(id, name, stock, price, description);
+		boolean result = dao.updateAction();
+		
+		if (result) {
+			JOptionPane.showMessageDialog(this, "정보 수정\n"+tfProductName.getText()+ " 정보가 수정었습니다."); //this 는 active 창에 띄우고 null은 화면아무데나 중앙에 띄워라
+		}else {
+			JOptionPane.showMessageDialog(this, "정보 수정\n"+ "수정 중 문제가 발생했습니다."); //this 는 active 창에 띄우고 null은 화면아무데나 중앙에 띄워라
+		}
+		
+	}
+	
+private void filePath() {   // file loading method
+		
+		JFileChooser chooser = new JFileChooser();
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("JPG, PNG, BMP", "jpg","png","bmp");
+		chooser.setFileFilter(filter);
+		
+		int ret = chooser.showOpenDialog(null);
+		if(ret != JFileChooser.APPROVE_OPTION) {
+			JOptionPane.showMessageDialog(null, "파일을 선택하지 않았습니다.", "경고",JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
+		String filePath = chooser.getSelectedFile().getPath();
+		tfFileName.setText(filePath);
+		
+		
+		lblImage.setIcon(new ImageIcon(filePath));
+		lblImage.setHorizontalAlignment(SwingConstants.CENTER);
+		
+		
+	}
+	
+	
+	
+	
+	private void conditionQuery() {
+		int i = cbSelection.getSelectedIndex();
+		String conditionQueryColumn = "";
+		switch(i) {
+		case 0:
+			conditionQueryColumn = "iname";
+			break;
+		case 1:
+			conditionQueryColumn = "iid";
+			break;
+		default:
+			break;
+		
+	}
+		tableInit();
+		conditionQueryAction(conditionQueryColumn);
+		clearColumn();
+	}
+	
+	private void conditionQueryAction(String conditionQueryColumn) {
+		
+		Kms_Dao_AdminProduct dao = new Kms_Dao_AdminProduct(conditionQueryColumn, tfSelection.getText()); 
+		ArrayList<Kms_Dto_AdminProduct> dtoList = dao.conditionList();
+		int listCount = dtoList.size();
+		
+		for(int i = 0; i < listCount; i++) {
+			String price = Integer.toString(dtoList.get(i).getIprice());
+			String stock = Integer.toString(dtoList.get(i).getIstock());
+			
+			String[] qTxt = {dtoList.get(i).getIid(), dtoList.get(i).getIname(), stock,
+					price};
+			outerTable.addRow(qTxt);
+		}
+
+	}
+	
+	private void insertAction() {
+		String id = tfProductId.getText();
+		String name = tfProductName.getText();
+		int price = Integer.parseInt(tfProductPrice.getText());
+		int stock = Integer.parseInt(tfProductQty.getText());
+		String imagename = "image";
+		String description = tfDescription.getText();
+		
+		// Image File
+		FileInputStream input = null;
+		
+		File file = new File(tfFileName.getText());
+		try {
+			input = new FileInputStream(file);
+		}catch(Exception e){
+			e.printStackTrace();
+			
+		}
+		
+		
+		Kms_Dao_AdminProduct dao = new Kms_Dao_AdminProduct(id, name, price, stock, description, input, description);
+		boolean result = dao.insertAction(); 
+		
+		if (result) {
+			JOptionPane.showMessageDialog(this, "정보 입력\n"+tfProductName.getText()+ "의 정보가 입력되었습니다."); //this 는 active 창에 띄우고 null은 화면아무데나 중앙에 띄워라
+		}else {
+			JOptionPane.showMessageDialog(this, "정보 입력\n"+ "입력 중 문제가 발생했습니다."); //this 는 active 창에 띄우고 null은 화면아무데나 중앙에 띄워라
+		}
+		
+	}
 }

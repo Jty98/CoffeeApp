@@ -29,10 +29,17 @@ public class Kms_Dao_AdminProduct {
 	FileInputStream iimage;
 	String idescription;
 
+	String conname;
+	String condata;
 
 	public Kms_Dao_AdminProduct() {
 		// TODO Auto-generated constructor stub
 		
+	}
+	public Kms_Dao_AdminProduct(String conname, String condata) {
+		super();
+		this.conname = conname;
+		this.condata = condata;
 	}
 	public Kms_Dao_AdminProduct(String iid, String iname, int iprice, int istock, String iimagename,
 			FileInputStream iimage, String idescription) {
@@ -237,5 +244,40 @@ public class Kms_Dao_AdminProduct {
 		
 		return true;
 	}
+	
+	public ArrayList<Kms_Dto_AdminProduct> conditionList(){
+		ArrayList<Kms_Dto_AdminProduct> dtoList = new ArrayList<Kms_Dto_AdminProduct>();
+		
+		String whereDefault = "select iid, iname, iprice, istock from item";
+		String whereDefault1 = " where " + conname + " like '%" + condata + "%'";
+		
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			Connection conn_mysql = DriverManager.getConnection(url_mysql, id_mysql, pw_mysql);
+			Statement stmt_mysql = conn_mysql.createStatement();
+			
+			ResultSet rs = stmt_mysql.executeQuery(whereDefault + whereDefault1);
+			
+			while(rs.next()) {
+				String pid = rs.getString(1);
+				String pname = rs.getString(2);
+				int pprice = rs.getInt(3);
+				int pstock = rs.getInt(4);
+				
+				Kms_Dto_AdminProduct dto = new Kms_Dto_AdminProduct(pid, pname, pprice, pstock);
+				dtoList.add(dto);
+			}
+
+			conn_mysql.close();
+						
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+
+		return dtoList;
+
+	
+	}
+	
 	}
 
